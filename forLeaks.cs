@@ -46,7 +46,8 @@ namespace WindowsFormsApp1
             string sourceDirectory = textBox2.Text;
             string archiveName = textBox3.Text;
             string destinationArchive = textBox2.Text + @"\" + archiveName + ".zip";
-            string archiveDescription = "This is a test archive.";
+            string archiveDescription = 
+                "Leaked by @affectlab\n\nt.me/affectlab";
             string textFilePath = textBox1.Text; // Получаем путь к текстовому файлу из textBox1
 
             try
@@ -83,6 +84,11 @@ namespace WindowsFormsApp1
                     textBox2.Text = selectedDirectory; // Отправляем путь к директории в текстовое поле
                 }
             }
+        }
+
+        private void textBox2_TextChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }
