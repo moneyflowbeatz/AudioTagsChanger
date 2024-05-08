@@ -34,6 +34,7 @@ namespace WindowsFormsApp1
                 textBox1.Text = selectedFolder;
             }
         }
+        
 
         private void button2_Click(object sender, EventArgs e)
         {
@@ -41,6 +42,11 @@ namespace WindowsFormsApp1
             string newDescription = textBox2.Text;
             string newPerformer = textBox3.Text;
             string AlbumName = textBox1.Text;
+            string Label = textBox12.Text;
+            string Genre = textBox8.Text;
+            string Year = textBox6.Text;
+            string imagePath = textBox4.Text;
+
 
             if (!string.IsNullOrEmpty(selectedFolder) && !string.IsNullOrEmpty(newDescription))
             {
@@ -56,18 +62,16 @@ namespace WindowsFormsApp1
                         {
                             TagLib.File audioFile = TagLib.File.Create(file);
                             audioFile.Tag.Title = newDescription;
-                            audioFile.Tag.Comment = newDescription;
-                            audioFile.Tag.Conductor = newDescription;
-                            audioFile.Tag.Copyright = newDescription;
-                            audioFile.Tag.Genres = new string[] { newDescription };
-                            audioFile.Tag.Lyrics = newDescription;
-                            audioFile.Tag.Publisher = newDescription;
-                            audioFile.Tag.RemixedBy = newDescription;
-                            audioFile.Tag.Subtitle = newDescription;
-                            audioFile.Tag.Year = 2024;
-                            audioFile.Tag.Performers = new string[] { newPerformer }; 
-                            audioFile.Tag.Composers = new string[] { AlbumName };
                             audioFile.Tag.AlbumArtists = new string[] { newPerformer };
+                            audioFile.Tag.Composers = new string[] { AlbumName };
+                            audioFile.Tag.Publisher = Label;
+                            audioFile.Tag.Copyright = "@affectlab";
+                            TagLib.Picture picture = new TagLib.Picture(imagePath);
+                            audioFile.Tag.Pictures = new TagLib.IPicture[] { picture };
+                            audioFile.Tag.Genres = new string[] { Genre };
+                            audioFile.Tag.Lyrics = newDescription;
+                            audioFile.Tag.Year = Convert.ToUInt16(Year);
+                            audioFile.Tag.Performers = new string[] { newPerformer }; 
                             audioFile.Save();
                         }
                         catch (Exception ex)
@@ -83,6 +87,9 @@ namespace WindowsFormsApp1
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            textBox4.Visible = false;
+            button4.Enabled = false;
+            button5.Enabled = false;
             toolTip1.SetToolTip(textBox1, "Тут появится путь к вашей папке после нажатия на кнопку ниже.");
             toolTip1.SetToolTip(button1, "Выборите каталог в появившемся меню после нажатия на кнопку");
         }
@@ -105,6 +112,31 @@ namespace WindowsFormsApp1
         private void button1_MouseLeave(object sender, EventArgs e)
         {
             toolTip1.Hide(button1);
+        }
+
+        private void label2_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = "Image Files|*.jpg;*.jpeg;*.png";
+
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                string selectedPhotoPath = openFileDialog.FileName;
+                textBox4.Visible = true;
+                textBox4.Text = selectedPhotoPath;
+                label10.Visible = false;
+            }
+            
         }
     }
 }
