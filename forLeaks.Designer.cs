@@ -127,9 +127,9 @@
             this.label4.AutoSize = true;
             this.label4.Location = new System.Drawing.Point(198, 213);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(152, 13);
+            this.label4.Size = new System.Drawing.Size(225, 13);
             this.label4.TabIndex = 11;
-            this.label4.Text = "Описание будет считано из: ";
+            this.label4.Text = "Выберите откуда будет считано описание: ";
             // 
             // button4
             // 

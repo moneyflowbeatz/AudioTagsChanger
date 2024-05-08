@@ -34,8 +34,7 @@ namespace WindowsFormsApp1
                     {
                         string fileContent = File.ReadAllText(selectedFile);
                         textBox1.Text = selectedFile;
-                        string fileName = Path.GetFileName(selectedFile);
-                        label4.Text += fileName;
+                        
                     }
                     catch (Exception ex)
                     {
@@ -46,7 +45,7 @@ namespace WindowsFormsApp1
             }
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private async void button2_Click(object sender, EventArgs e)
         {
             string sourceDirectory = textBox2.Text;
             string archiveName = textBox3.Text;
@@ -66,9 +65,41 @@ namespace WindowsFormsApp1
                         zip.AddFile(textFilePath, ""); // Добавляем текстовый файл к архиву
                     }
 
-                    zip.Comment = archiveDescription;
+                    ProgressBar progressBar = new ProgressBar
+                    {
+                        Minimum = 0,
+                        Maximum = 100,
+                        Dock = DockStyle.Bottom,
+                        Style = ProgressBarStyle.Continuous
+                    };
 
-                    zip.Save(destinationArchive);
+                    Controls.Add(progressBar);
+
+                   
+
+                    await Task.Run(() =>
+                    {
+                        zip.SaveProgress += (o, args) =>
+                        {
+                            // Проверяем, что EntriesTotal не равен нулю, чтобы избежать ошибки деления на ноль
+                            if (args.EntriesTotal != 0)
+                            {
+                                // Обновляем значение ProgressBar в главном потоке
+                                Invoke(new MethodInvoker(() =>
+                                {
+                                    progressBar.Value = (int)((args.EntriesSaved * 100) / args.EntriesTotal);
+                                }));
+                            }
+                        };
+
+
+                        zip.Comment = archiveDescription;
+                        zip.Save(destinationArchive);
+                    });
+
+                    
+
+                    
                 }
 
                 MessageBox.Show("Архив успешно создан.");
@@ -98,14 +129,21 @@ namespace WindowsFormsApp1
 
         private void button4_Click(object sender, EventArgs e)
         {
-            filePath = textBox1.Text; // Получаем путь к текстовому файлу из textBox1
-            archiveDescription = ReadTextFromFile(filePath);
-
-            if (!string.IsNullOrEmpty(archiveDescription)) // Проверяем, что текст был успешно считан
+            using (OpenFileDialog openFileDialog = new OpenFileDialog())
             {
-                label5.Visible = true; // Отображаем Label5
+                openFileDialog.Filter = "Текстовые файлы (*.txt)|*.txt|Все файлы (*.*)|*.*";
+
+                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    filePath = openFileDialog.FileName; // Получаем путь к выбранному текстовому файлу
+                    archiveDescription = ReadTextFromFile(filePath); // Читаем текст из файла
+
+                    if (!string.IsNullOrEmpty(archiveDescription)) // Проверяем, что текст был успешно считан
+                    {
+                        label5.Visible = true; // Отображаем Label5
+                    }
+                }
             }
-            // Вызов метода button2_Click, передача прочитанного текста в качестве описания архива
 
         }
 
