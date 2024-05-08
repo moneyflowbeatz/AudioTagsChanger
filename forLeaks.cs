@@ -18,6 +18,8 @@ namespace WindowsFormsApp1
         {
             InitializeComponent();
         }
+        private string filePath;
+        private string archiveDescription;
 
         private void button1_Click(object sender, EventArgs e)
         {
@@ -32,12 +34,15 @@ namespace WindowsFormsApp1
                     {
                         string fileContent = File.ReadAllText(selectedFile);
                         textBox1.Text = selectedFile;
+                        string fileName = Path.GetFileName(selectedFile);
+                        label4.Text += fileName;
                     }
                     catch (Exception ex)
                     {
                         MessageBox.Show("Ошибка при чтении файла: " + ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
+                
             }
         }
 
@@ -46,8 +51,8 @@ namespace WindowsFormsApp1
             string sourceDirectory = textBox2.Text;
             string archiveName = textBox3.Text;
             string destinationArchive = textBox2.Text + @"\" + archiveName + ".zip";
-            string archiveDescription = 
-                "Leaked by @affectlab\n\nt.me/affectlab";
+            //string archiveDescription = 
+            //    "Leaked by @affectlab\n\nt.me/affectlab";
             string textFilePath = textBox1.Text; // Получаем путь к текстовому файлу из textBox1
 
             try
@@ -66,11 +71,11 @@ namespace WindowsFormsApp1
                     zip.Save(destinationArchive);
                 }
 
-                Console.WriteLine("Архив успешно создан.");
+                MessageBox.Show("Архив успешно создан.");
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Ошибка при создании архива: " + ex.Message);
+                MessageBox.Show("Ошибка при создании архива: " + ex.Message);
             }
         }
 
@@ -89,6 +94,35 @@ namespace WindowsFormsApp1
         private void textBox2_TextChanged(object sender, EventArgs e)
         {
 
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            filePath = textBox1.Text; // Получаем путь к текстовому файлу из textBox1
+            archiveDescription = ReadTextFromFile(filePath);
+
+            if (!string.IsNullOrEmpty(archiveDescription)) // Проверяем, что текст был успешно считан
+            {
+                label5.Visible = true; // Отображаем Label5
+            }
+            // Вызов метода button2_Click, передача прочитанного текста в качестве описания архива
+
+        }
+
+        private string ReadTextFromFile(string filePath)
+        {
+            string fileContent = "";
+            try
+            {
+                // Чтение текста из файла
+                fileContent = File.ReadAllText(filePath);
+            }
+            catch (Exception ex)
+            {
+                // Обработка ошибки чтения файла
+                MessageBox.Show("Ошибка при чтении файла: " + ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            return fileContent;
         }
     }
 }
