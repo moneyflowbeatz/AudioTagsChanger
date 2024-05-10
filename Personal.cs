@@ -150,5 +150,21 @@ namespace WindowsFormsApp1
                 MessageBox.Show("Не указан путь к аудиофайлу.", "Ошибка");
             }
         }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            string currentAudioFilePath = textBox1.Text; // Получаем путь к текущему аудиофайлу из textBox1
+
+            if (!string.IsNullOrEmpty(currentAudioFilePath))
+            {
+                // Удаляем текст песни из текущего аудиофайла
+                LyricsManager.RemoveLyricsFromAudioFile(currentAudioFilePath);
+                MessageBox.Show("Текст песни успешно удален из аудиофайла.", "Успешно");
+            }
+            else
+            {
+                MessageBox.Show("Не указан путь к аудиофайлу.", "Ошибка");
+            }
+        }
     }
 }

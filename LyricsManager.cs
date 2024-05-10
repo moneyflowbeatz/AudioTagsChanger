@@ -22,6 +22,26 @@ namespace WindowsFormsApp1
                 return null;
             }
         }
+
+        public static void RemoveLyricsFromAudioFile(string audioFilePath)
+        {
+            try
+            {
+                // Открываем аудиофайл
+                using (var audioFile = TagLib.File.Create(audioFilePath))
+                {
+                    // Устанавливаем текст песни как пустую строку
+                    audioFile.Tag.Lyrics = string.Empty;
+
+                    // Сохраняем изменения
+                    audioFile.Save();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Ошибка при удалении текста песни из аудиофайла: " + ex.Message);
+            }
+        }
     }
 
 
