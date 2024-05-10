@@ -77,13 +77,13 @@
             // 
             // button3
             // 
-            this.button3.Enabled = false;
-            this.button3.Location = new System.Drawing.Point(138, 201);
+            this.button3.Location = new System.Drawing.Point(138, 196);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(274, 42);
             this.button3.TabIndex = 4;
             this.button3.Text = "Работа с определнным аудиофайлом";
             this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
             // Main
             // 

@@ -162,5 +162,12 @@ namespace WindowsFormsApp1
             }
             return fileContent;
         }
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+            this.Close();
+            Main main = new Main();
+            main.Show();
+        }
     }
 }
