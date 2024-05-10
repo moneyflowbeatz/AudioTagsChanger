@@ -92,6 +92,8 @@ namespace WindowsFormsApp1
             button5.Enabled = false;
             toolTip1.SetToolTip(textBox1, "Тут появится путь к вашей папке после нажатия на кнопку ниже.");
             toolTip1.SetToolTip(button1, "Выборите каталог в появившемся меню после нажатия на кнопку");
+            toolTip1.SetToolTip(button3, "Недоступно для изменения текста всех аудиофайлов сразу, возможны конфликты");
+            toolTip1.SetToolTip(button4, "Недоступно для изменения текста всех аудиофайлов сразу, возможны конфликты");
         }
 
         private void textBox1_MouseHover(object sender, EventArgs e)
@@ -110,6 +112,26 @@ namespace WindowsFormsApp1
         }
 
         private void button1_MouseLeave(object sender, EventArgs e)
+        {
+            toolTip1.Hide(button1);
+        }
+
+        private void button3_MouseHover(object sender, EventArgs e)
+        {
+            toolTip1.Show(toolTip1.GetToolTip(button1), button1, button1.Width, 0);
+        }
+
+        private void button3_MouseLeave(object sender, EventArgs e)
+        {
+            toolTip1.Hide(button1);
+        }
+
+        private void button4_MouseHover(object sender, EventArgs e)
+        {
+            toolTip1.Show(toolTip1.GetToolTip(button1), button1, button1.Width, 0);
+        }
+
+        private void button4_MouseLeave(object sender, EventArgs e)
         {
             toolTip1.Hide(button1);
         }
@@ -145,5 +167,58 @@ namespace WindowsFormsApp1
             Main main = new Main();
             main.Show();
         }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            using (var lyricsForm = new LyricsForm())
+            {
+                if (lyricsForm.ShowDialog() == DialogResult.OK)
+                {
+                    LyricsManager.SongLyrics = lyricsForm.richTextBox1.Text;
+                }
+            }
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            string currentAudioFilePath = textBox1.Text; // Получаем путь к текущему аудиофайлу из textBox1
+
+            if (!string.IsNullOrEmpty(currentAudioFilePath))
+            {
+                // Получаем текст песни из текущего аудиофайла
+                string currentLyrics = LyricsManager.GetLyricsFromAudioFile(currentAudioFilePath);
+
+                if (!string.IsNullOrEmpty(currentLyrics))
+                {
+
+                    // Отображаем текст песни в RichTextBox на форме LyricsForm
+
+
+                    // Открываем форму LyricsForm для изменения текста песни
+                    using (var lyricsForm = new LyricsForm())
+                    {
+                        if (lyricsForm.ShowDialog() == DialogResult.OK)
+                        {
+                            lyricsForm.richTextBox1.Text = currentLyrics;
+                            // Получаем измененный текст песни
+                            string editedLyrics = lyricsForm.richTextBox1.Text;
+
+                            // Сохраняем измененный текст песни обратно в LyricsManager
+                            LyricsManager.SongLyrics = editedLyrics;
+                        }
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Не удалось получить текст песни из аудиофайла.", "Ошибка");
+                }
+            }
+            else
+            {
+                MessageBox.Show("Не указан путь к аудиофайлу.", "Ошибка");
+            }
+        }
+
+        
     }
 }
