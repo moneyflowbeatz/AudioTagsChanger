@@ -40,7 +40,7 @@ namespace WindowsFormsApp1
         {
             string selectedFolder = textBox1.Text; 
             string newDescription = textBox2.Text;
-            string newPerformer = textBox3.Text;
+            string newPerformer = textBox5.Text;
             string AlbumName = textBox1.Text;
             string Label = textBox12.Text;
             string Genre = textBox8.Text;
@@ -66,8 +66,11 @@ namespace WindowsFormsApp1
                             audioFile.Tag.Composers = new string[] { AlbumName };
                             audioFile.Tag.Publisher = Label;
                             audioFile.Tag.Copyright = "@affectlab";
-                            TagLib.Picture picture = new TagLib.Picture(imagePath);
-                            audioFile.Tag.Pictures = new TagLib.IPicture[] { picture };
+                            if (!string.IsNullOrEmpty(imagePath))
+                            {
+                                TagLib.Picture picture = new TagLib.Picture(imagePath);
+                                audioFile.Tag.Pictures = new TagLib.IPicture[] { picture };
+                            }
                             audioFile.Tag.Genres = new string[] { Genre };
                             audioFile.Tag.Lyrics = newDescription;
                             audioFile.Tag.Year = Convert.ToUInt16(Year);
