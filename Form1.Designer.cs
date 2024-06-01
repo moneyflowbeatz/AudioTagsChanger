@@ -107,6 +107,7 @@
             this.textBox2.Name = "textBox2";
             this.textBox2.Size = new System.Drawing.Size(222, 20);
             this.textBox2.TabIndex = 4;
+            this.textBox2.Text = "t.me/AffectLab\r\n";
             // 
             // button2
             // 
@@ -142,6 +143,7 @@
             this.textBox3.Name = "textBox3";
             this.textBox3.Size = new System.Drawing.Size(222, 20);
             this.textBox3.TabIndex = 7;
+            this.textBox3.Text = "t.me/AffectLab\r\n";
             // 
             // label6
             // 
@@ -158,6 +160,7 @@
             this.textBox5.Name = "textBox5";
             this.textBox5.Size = new System.Drawing.Size(222, 20);
             this.textBox5.TabIndex = 9;
+            this.textBox5.Text = "t.me/AffectLab";
             // 
             // label7
             // 
@@ -174,6 +177,7 @@
             this.textBox6.Name = "textBox6";
             this.textBox6.Size = new System.Drawing.Size(222, 20);
             this.textBox6.TabIndex = 19;
+            this.textBox6.Text = "2024";
             // 
             // label8
             // 
@@ -199,6 +203,7 @@
             this.textBox8.Name = "textBox8";
             this.textBox8.Size = new System.Drawing.Size(222, 20);
             this.textBox8.TabIndex = 15;
+            this.textBox8.Text = "t.me/AffectLab";
             // 
             // button3
             // 
@@ -251,6 +256,7 @@
             this.textBox12.Name = "textBox12";
             this.textBox12.Size = new System.Drawing.Size(222, 20);
             this.textBox12.TabIndex = 24;
+            this.textBox12.Text = "t.me/AffectLab";
             // 
             // label5
             // 

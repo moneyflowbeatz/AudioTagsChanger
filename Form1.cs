@@ -10,6 +10,9 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using TagLib;
+using TagLib.Mpeg;
+using NAudio.Wave;
+
 
 namespace WindowsFormsApp1
 {
@@ -34,24 +37,23 @@ namespace WindowsFormsApp1
                 textBox1.Text = selectedFolder;
             }
         }
-        
+
 
         private void button2_Click(object sender, EventArgs e)
         {
-            string selectedFolder = textBox1.Text; 
+            string selectedFolder = textBox1.Text;
             string newDescription = textBox2.Text;
             string newPerformer = textBox3.Text;
-            string AlbumName = textBox1.Text;
+            string AlbumName = textBox5.Text;
             string Label = textBox12.Text;
             string Genre = textBox8.Text;
             string Year = textBox6.Text;
             string imagePath = textBox4.Text;
 
-
             if (!string.IsNullOrEmpty(selectedFolder) && !string.IsNullOrEmpty(newDescription))
             {
-                string[] audioFiles = Directory.GetFiles(selectedFolder, "*.*", SearchOption.AllDirectories); 
-                List<string> audioExtensions = new List<string> { ".mp3", ".wav", ".flac", ".aac", ".ogg", ".m4a" }; 
+                string[] audioFiles = Directory.GetFiles(selectedFolder, "*.*", SearchOption.AllDirectories);
+                List<string> audioExtensions = new List<string> { ".mp3", ".wav", ".flac", ".aac", ".ogg", ".m4a" };
 
                 foreach (string file in audioFiles)
                 {
@@ -60,19 +62,29 @@ namespace WindowsFormsApp1
                     {
                         try
                         {
-                            TagLib.File audioFile = TagLib.File.Create(file);
-                            audioFile.Tag.Title = newDescription;
-                            audioFile.Tag.AlbumArtists = new string[] { newPerformer };
-                            audioFile.Tag.Composers = new string[] { AlbumName };
-                            audioFile.Tag.Publisher = Label;
-                            audioFile.Tag.Copyright = "@affectlab";
-                            TagLib.Picture picture = new TagLib.Picture(imagePath);
-                            audioFile.Tag.Pictures = new TagLib.IPicture[] { picture };
-                            audioFile.Tag.Genres = new string[] { Genre };
-                            audioFile.Tag.Lyrics = newDescription;
-                            audioFile.Tag.Year = Convert.ToUInt16(Year);
-                            audioFile.Tag.Performers = new string[] { newPerformer }; 
-                            audioFile.Save();
+                            if (extension == ".wav")
+                            {
+                                ClearWavMetadata(file);
+                                SetWavMetadata(file, newDescription, newPerformer, AlbumName, Label, Genre, Year, imagePath);
+                            }
+                            else
+                            {
+                                TagLib.File audioFile = TagLib.File.Create(file);
+                                ClearMetadata(audioFile); // Очищаем метаданные перед изменением
+                                audioFile.Tag.Title = newDescription;
+                                audioFile.Tag.AlbumArtists = new string[] { newPerformer };
+                                audioFile.Tag.Album = AlbumName; // Добавление метаданных для альбома
+                                audioFile.Tag.Composers = new string[] { AlbumName };
+                                audioFile.Tag.Publisher = Label;
+                                audioFile.Tag.Copyright = "@affectlab";
+                                //TagLib.Picture picture = new TagLib.Picture(imagePath);
+                                //audioFile.Tag.Pictures = new TagLib.IPicture[] { picture };
+                                audioFile.Tag.Genres = new string[] { Genre };
+                                audioFile.Tag.Lyrics = newDescription;
+                                audioFile.Tag.Year = Convert.ToUInt16(Year);
+                                audioFile.Tag.Performers = new string[] { newPerformer };
+                                audioFile.Save();
+                            }
                         }
                         catch (Exception ex)
                         {
@@ -81,8 +93,76 @@ namespace WindowsFormsApp1
                     }
                 }
 
-                MessageBox.Show("Описание аудиофайлов изменено.", "Успешно"); 
+                MessageBox.Show("Описание аудиофайлов изменено.", "Успешно");
             }
+        }
+
+        private void ClearMetadata(TagLib.File audioFile)
+        {
+            // Очищаем все стандартные теги
+            audioFile.Tag.Clear();
+        }
+
+        private void ClearWavMetadata(string filePath)
+        {
+            // Очистка метаданных WAV файла вручную
+            using (var reader = new WaveFileReader(filePath))
+            {
+                var writer = new WaveFileWriter(filePath + ".tmp", reader.WaveFormat);
+                byte[] buffer = new byte[reader.WaveFormat.AverageBytesPerSecond];
+                int bytesRead;
+
+                while ((bytesRead = reader.Read(buffer, 0, buffer.Length)) > 0)
+                {
+                    writer.Write(buffer, 0, bytesRead);
+                }
+
+                writer.Dispose();
+            }
+
+            System.IO.File.Delete(filePath);
+            System.IO.File.Move(filePath + ".tmp", filePath);
+        }
+
+        private void SetWavMetadata(string filePath, string newDescription, string newPerformer, string albumName, string label, string genre, string year, string imagePath)
+        {
+            // Используем NAudio для установки метаданных WAV файла вручную
+            var tempFile = Path.Combine(Path.GetDirectoryName(filePath), Path.GetFileNameWithoutExtension(filePath) + "_temp.wav");
+
+            using (var reader = new WaveFileReader(filePath))
+            {
+                var writer = new WaveFileWriter(tempFile, reader.WaveFormat);
+                byte[] buffer = new byte[reader.WaveFormat.AverageBytesPerSecond];
+                int bytesRead;
+
+                while ((bytesRead = reader.Read(buffer, 0, buffer.Length)) > 0)
+                {
+                    writer.Write(buffer, 0, bytesRead);
+                }
+
+                writer.Dispose();
+            }
+
+            // Добавление метаданных
+            using (var tagFile = TagLib.File.Create(tempFile))
+            {
+                tagFile.Tag.Title = newDescription;
+                tagFile.Tag.AlbumArtists = new string[] { newPerformer };
+                tagFile.Tag.Album = albumName;
+                tagFile.Tag.Composers = new string[] { albumName };
+                tagFile.Tag.Publisher = label;
+                tagFile.Tag.Copyright = "@affectlab";
+                //TagLib.Picture picture = new TagLib.Picture(imagePath);
+                //tagFile.Tag.Pictures = new TagLib.IPicture[] { picture };
+                tagFile.Tag.Genres = new string[] { genre };
+                tagFile.Tag.Lyrics = newDescription;
+                tagFile.Tag.Year = Convert.ToUInt16(year);
+                tagFile.Tag.Performers = new string[] { newPerformer };
+                tagFile.Save();
+            }
+
+            System.IO.File.Delete(filePath);
+            System.IO.File.Move(tempFile, filePath);
         }
 
         private void Form1_Load(object sender, EventArgs e)
