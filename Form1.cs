@@ -55,21 +55,32 @@ namespace WindowsFormsApp1
                 string[] audioFiles = Directory.GetFiles(selectedFolder, "*.*", SearchOption.AllDirectories);
                 List<string> audioExtensions = new List<string> { ".mp3", ".wav", ".flac", ".aac", ".ogg", ".m4a" };
 
-                foreach (string file in audioFiles)
+                foreach (string filePath in audioFiles)
                 {
-                    string extension = Path.GetExtension(file).ToLower();
+                    string extension = Path.GetExtension(filePath).ToLower();
                     if (audioExtensions.Contains(extension))
                     {
                         try
                         {
+                            string fileName = Path.GetFileNameWithoutExtension(filePath);
+                            string newFilePath = filePath; // Создаем новую переменную для хранения пути к файлу после переименования
+
+                            // Проверяем, содержит ли имя файла "@pluggsupply" или "@dripcartel" и переименовываем, если необходимо
+                            if (fileName.Contains("@pluggsupply") || fileName.Contains("@dripcartel") || fileName.Contains("@dreamvst") || fileName.Contains("[@betterkits]") || fileName.Contains("@betterkits"))
+                            {
+                                string newFileName = fileName.Replace("@pluggsupply", "").Replace("@dripcartel", "");
+                                newFilePath = Path.Combine(Path.GetDirectoryName(filePath), newFileName + Path.GetExtension(filePath));
+                                System.IO.File.Move(filePath, newFilePath);
+                            }
+
                             if (extension == ".wav")
                             {
-                                ClearWavMetadata(file);
-                                SetWavMetadata(file, newDescription, newPerformer, AlbumName, Label, Genre, Year, imagePath);
+                                ClearWavMetadata(newFilePath);
+                                SetWavMetadata(newFilePath, newDescription, newPerformer, AlbumName, Label, Genre, Year, imagePath);
                             }
                             else
                             {
-                                TagLib.File audioFile = TagLib.File.Create(file);
+                                TagLib.File audioFile = TagLib.File.Create(newFilePath);
                                 ClearMetadata(audioFile); // Очищаем метаданные перед изменением
                                 audioFile.Tag.Title = newDescription;
                                 audioFile.Tag.AlbumArtists = new string[] { newPerformer };
@@ -88,10 +99,11 @@ namespace WindowsFormsApp1
                         }
                         catch (Exception ex)
                         {
-                            MessageBox.Show("Ошибка при переименовании описания: " + file + "\n" + ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            MessageBox.Show("Ошибка при переименовании описания: " + filePath + "\n" + ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
                     }
                 }
+
 
                 MessageBox.Show("Описание аудиофайлов изменено.", "Успешно");
             }
